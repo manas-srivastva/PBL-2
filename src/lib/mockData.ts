@@ -7,6 +7,8 @@ export interface Seat {
   zone: string;
 }
 
+
+
 const statuses: SeatStatus[] = ["available", "occupied", "reserved"];
 
 function randomStatus(): SeatStatus {
