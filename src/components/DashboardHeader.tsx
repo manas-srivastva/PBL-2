@@ -1,4 +1,5 @@
 import { Library } from "lucide-react";
+import ThemeToggle from "./ThemeToggle";
 
 const DashboardHeader = () => (
   <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-card/80 backdrop-blur-xl">
@@ -12,12 +13,15 @@ const DashboardHeader = () => (
           Real-Time Occupancy
         </span>
       </div>
-      <div className="flex items-center gap-2 rounded-full bg-status-available-bg px-3 py-1.5">
-        <span className="relative flex h-2.5 w-2.5">
-          <span className="animate-pulse-live absolute inline-flex h-full w-full rounded-full bg-status-available opacity-75" />
-          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-status-available" />
-        </span>
-        <span className="text-xs font-semibold text-status-available">Live</span>
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 rounded-full bg-status-available-bg px-3 py-1.5">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="animate-pulse-live absolute inline-flex h-full w-full rounded-full bg-status-available opacity-75" />
+            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-status-available" />
+          </span>
+          <span className="text-xs font-semibold text-status-available">Live</span>
+        </div>
+        <ThemeToggle />
       </div>
     </div>
   </header>
