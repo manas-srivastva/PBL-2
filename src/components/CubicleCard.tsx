@@ -15,24 +15,24 @@ interface CubicleCardProps {
 const statusConfig = {
   available: {
     bg: "bg-status-available-bg",
-    border: "border-status-available/30",
-    wallColor: "bg-status-available/20",
+    wallBorder: "border-status-available/50",
+    wallBg: "bg-status-available/15",
     icon: Check,
     iconColor: "text-status-available",
     label: "Available",
   },
   occupied: {
     bg: "bg-status-occupied-bg",
-    border: "border-status-occupied/30",
-    wallColor: "bg-status-occupied/20",
+    wallBorder: "border-status-occupied/50",
+    wallBg: "bg-status-occupied/15",
     icon: User,
     iconColor: "text-status-occupied",
     label: "Occupied",
   },
   reserved: {
     bg: "bg-status-reserved-bg",
-    border: "border-status-reserved/30",
-    wallColor: "bg-status-reserved/20",
+    wallBorder: "border-status-reserved/50",
+    wallBg: "bg-status-reserved/15",
     icon: Briefcase,
     iconColor: "text-status-reserved",
     label: "Bag Detected",
@@ -57,40 +57,62 @@ const CubicleCard = ({ seat, highlighted = false }: CubicleCardProps) => {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
+        {/* Outer cubicle boundary — thick walls */}
         <div
           ref={cardRef}
           className={`
-            relative flex flex-col rounded-xl border-2 overflow-hidden cursor-pointer
-            transition-all duration-300 ease-out hover:scale-[1.03] hover:shadow-lg
-            ${config.border} ${config.bg}
-            ${highlighted ? "ring-2 ring-primary ring-offset-2 scale-[1.05] z-10" : ""}
+            relative cursor-pointer transition-all duration-300 ease-out
+            hover:scale-[1.03] hover:shadow-md
+            ${highlighted ? "ring-2 ring-primary ring-offset-2 scale-[1.04] z-10" : ""}
           `}
         >
-          {/* Cubicle walls (top + left side indicator) */}
-          <div className={`h-1.5 w-full ${config.wallColor}`} />
-          <div className="flex items-stretch">
-            <div className={`w-1.5 ${config.wallColor}`} />
-            {/* Desk area */}
-            <div className="flex-1 flex flex-col items-center justify-center gap-2 p-3 py-4">
-              {/* Desk surface */}
-              <div className="w-full h-1 rounded-full bg-border/60 mb-1" />
-              <Icon className={`h-5 w-5 ${config.iconColor}`} />
-              <span className="text-[10px] font-semibold text-muted-foreground">
+          {/* Floor-plan cubicle: U-shape walls */}
+          <div
+            className={`
+              relative rounded-lg border-2 ${config.wallBorder}
+              ${config.wallBg} p-[3px]
+            `}
+          >
+            {/* Open side indicator (bottom open = entrance) */}
+            <div
+              className={`
+                rounded-md ${config.bg} border border-border/20
+                flex flex-col items-center justify-center gap-1.5
+                px-2 py-3
+              `}
+            >
+              {/* Desk surface line */}
+              <div className="w-full h-0.5 rounded-full bg-border/50" />
+
+              {/* Status icon */}
+              <Icon className={`h-3.5 w-3.5 ${config.iconColor}`} />
+
+              {/* Seat ID */}
+              <span className="text-[8px] font-bold text-muted-foreground leading-none tracking-wide">
                 {seat.id.split("-").pop()}
               </span>
             </div>
+
+            {/* Entrance gap at bottom — open side of cubicle */}
+            <div
+              className={`
+                absolute -bottom-[2px] left-1/2 -translate-x-1/2
+                w-1/3 h-[3px] bg-card
+              `}
+            />
+          </div>
+
+          {/* Chair dot below entrance */}
+          <div className="flex justify-center mt-1">
+            <div className={`w-3 h-1.5 rounded-full border ${config.wallBorder} ${config.wallBg}`} />
           </div>
         </div>
       </TooltipTrigger>
       <TooltipContent className="glass-card-elevated border-border/50 p-3">
         <div className="flex flex-col gap-1">
           <span className="text-xs font-semibold text-foreground">Cubicle {seat.id}</span>
-          <span className="text-[10px] text-muted-foreground capitalize">
-            Status: {config.label}
-          </span>
-          <span className="text-[10px] text-muted-foreground">
-            Updated: {seat.lastUpdated}
-          </span>
+          <span className="text-[10px] text-muted-foreground">Status: {config.label}</span>
+          <span className="text-[10px] text-muted-foreground">Updated: {seat.lastUpdated}</span>
         </div>
       </TooltipContent>
     </Tooltip>

@@ -15,22 +15,19 @@ interface BenchRowProps {
 
 const statusConfig = {
   available: {
-    bg: "bg-status-available-bg hover:bg-status-available/20",
-    border: "border-status-available/30",
+    bg: "bg-status-available-bg hover:bg-status-available/25",
     icon: Check,
     iconColor: "text-status-available",
     label: "Available",
   },
   occupied: {
-    bg: "bg-status-occupied-bg hover:bg-status-occupied/20",
-    border: "border-status-occupied/30",
+    bg: "bg-status-occupied-bg hover:bg-status-occupied/25",
     icon: User,
     iconColor: "text-status-occupied",
     label: "Occupied",
   },
   reserved: {
-    bg: "bg-status-reserved-bg hover:bg-status-reserved/20",
-    border: "border-status-reserved/30",
+    bg: "bg-status-reserved-bg hover:bg-status-reserved/25",
     icon: Briefcase,
     iconColor: "text-status-reserved",
     label: "Bag Detected",
@@ -40,13 +37,13 @@ const statusConfig = {
 const BenchSeat = ({
   seat,
   highlighted,
-  isFirst,
   isLast,
+  flip,
 }: {
   seat: Seat;
   highlighted: boolean;
-  isFirst: boolean;
   isLast: boolean;
+  flip?: boolean;
 }) => {
   const config = statusConfig[seat.status];
   const Icon = config.icon;
@@ -68,15 +65,16 @@ const BenchSeat = ({
         <div
           ref={ref}
           className={`
-            flex-1 flex flex-col items-center justify-center gap-1.5 py-4 px-2
+            flex-1 flex flex-col items-center justify-center gap-1 py-3 px-1
             cursor-pointer transition-all duration-300
             ${config.bg}
             ${!isLast ? "border-r border-border/40" : ""}
             ${highlighted ? "ring-inset ring-2 ring-primary z-10" : ""}
+            ${flip ? "flex-col-reverse" : ""}
           `}
         >
-          <Icon className={`h-4 w-4 ${config.iconColor}`} />
-          <span className="text-[10px] font-semibold text-muted-foreground">
+          <Icon className={`h-3.5 w-3.5 ${config.iconColor}`} />
+          <span className="text-[9px] font-semibold text-muted-foreground leading-none">
             {seat.id.split("-").pop()}
           </span>
         </div>
@@ -96,26 +94,57 @@ const BenchRow = ({ seats, rowIndex, searchQuery = "" }: BenchRowProps) => {
   const highlight = (seat: Seat) =>
     !!searchQuery && seat.id.toLowerCase().includes(searchQuery.toLowerCase());
 
+  // Split seats in half — top row and bottom row
+  const half = Math.ceil(seats.length / 2);
+  const topSeats = seats.slice(0, half);
+  const bottomSeats = seats.slice(half);
+
   return (
     <div className="flex flex-col gap-0">
-      {/* Table surface */}
-      <div className="h-2 rounded-t-xl bg-border/40 border border-border/30 border-b-0 mx-1" />
-      <div className="flex rounded-b-xl border border-border/40 overflow-hidden shadow-sm">
-        {seats.map((seat, i) => (
+      {/* Table label */}
+      <div className="flex items-center gap-2 mb-1.5">
+        <span className="text-[10px] font-semibold text-muted-foreground/70 uppercase tracking-wider">
+          Table {rowIndex + 1}
+        </span>
+        <div className="flex-1 h-px bg-border/30" />
+      </div>
+
+      {/* Top row of seats (facing down toward table) */}
+      <div className="flex rounded-t-xl border border-b-0 border-border/40 overflow-hidden shadow-sm">
+        {topSeats.map((seat, i) => (
           <BenchSeat
             key={seat.id}
             seat={seat}
             highlighted={highlight(seat)}
-            isFirst={i === 0}
-            isLast={i === seats.length - 1}
+            isLast={i === topSeats.length - 1}
+            flip={false}
           />
         ))}
       </div>
-      <div className="flex justify-between px-4">
-        <div className="w-0.5 h-2 bg-border/50 rounded-b" />
-        <div className="w-0.5 h-2 bg-border/50 rounded-b" />
+
+      {/* Table surface */}
+      <div className="h-4 bg-border/25 border-x border-border/40 flex items-center justify-center">
+        <div className="h-px w-[90%] bg-border/40" />
       </div>
-      <p className="text-[10px] text-muted-foreground/60 text-center mt-0.5">Table {rowIndex + 1}</p>
+
+      {/* Bottom row of seats (facing up toward table) */}
+      <div className="flex rounded-b-xl border border-t-0 border-border/40 overflow-hidden shadow-sm">
+        {bottomSeats.map((seat, i) => (
+          <BenchSeat
+            key={seat.id}
+            seat={seat}
+            highlighted={highlight(seat)}
+            isLast={i === bottomSeats.length - 1}
+            flip={true}
+          />
+        ))}
+      </div>
+
+      {/* Table legs */}
+      <div className="flex justify-between px-6 mt-0.5">
+        <div className="w-1 h-2 bg-border/40 rounded-b" />
+        <div className="w-1 h-2 bg-border/40 rounded-b" />
+      </div>
     </div>
   );
 };
